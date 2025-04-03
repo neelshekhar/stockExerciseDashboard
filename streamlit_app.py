@@ -105,3 +105,27 @@ with col1:
         font=dict(family='Segoe UI', color='#2E3B4E', size=16),
         legend=dict(orientation="h", yanchor="bottom", y=1.02, xanchor="center", x=0.5)
     )
+    st.plotly_chart(fig, use_container_width=True)
+
+with col2:
+    st.subheader("📌 Detailed Metrics at Selected Valuation")
+    st.markdown("### ❌ If You Don't Exercise Now")
+    st.metric("Total Tax Liability", f"₹{current_row['Tax Without Exercise']} Lacs")
+
+    st.markdown("### ✅ If You Exercise Now")
+    st.metric("Perquisite Tax", f"₹{current_row['Tax Now with Exercise']} Lacs")
+    st.metric("Capital Gains Tax", f"₹{current_row['LTCG Tax']} Lacs")
+    st.metric("Total Tax Liability", f"₹{current_row['Total Tax with Exercise']} Lacs")
+    st.metric("Tax Savings", f"₹{current_row['Potential Tax Savings']} Lacs")
+
+# Breakdown Table
+st.subheader("📄 Tax Scenario Breakdown Across All Valuations")
+st.dataframe(df.style.format({
+    'FMV': '₹{:,.0f} Lacs',
+    'Value of Options': '₹{:,.0f} Lacs',
+    'Tax Without Exercise': '₹{:,.0f} Lacs',
+    'Tax Now with Exercise': '₹{:,.0f} Lacs',
+    'LTCG Tax': '₹{:,.0f} Lacs',
+    'Total Tax with Exercise': '₹{:,.0f} Lacs',
+    'Potential Tax Savings': '₹{:,.0f} Lacs'
+}))
