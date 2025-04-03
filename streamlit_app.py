@@ -105,7 +105,7 @@ with st.expander("ℹ️ Explanation of Calculations", expanded=False):
     - {int(adjusted_options)} × ₹{int(ipo_fmv)} = ₹{int(adjusted_options * ipo_fmv):,}
 
     **❌ If You Don't Exercise Now:**
-    - Entire gain taxed as income:
+    - Entire gain taxed as income at IPO:
       - Gain: ₹{int(ipo_fmv)} − ₹{strike_price} = ₹{int(gain_no_exercise)}
       - Tax: {int(adjusted_options)} × ₹{int(gain_no_exercise)} × {income_tax_rate * 100}% = ₹{tax_no_exercise:,}
 
