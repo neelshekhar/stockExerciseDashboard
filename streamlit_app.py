@@ -7,29 +7,36 @@ import plotly.graph_objects as go
 
 # Constants
 BASE_OPTIONS = 2131
-current_fmv = 4150
-base_fmv = 1365
-tax_rate = 36.67 / 100
+current_fmv = 4150  # FMV at time of early exercise
+strike_price = 12   # Strike price of the options
+income_tax_rate = 36.67 / 100
 ltcg_rate = 12.5 / 100
 
 # Function to calculate data
 def calculate_data(adjusted_options):
     data = []
     for val in range(1, 11):
-        fmv = current_fmv * (val / 3)
-        option_value = round(adjusted_options * fmv / 100000)
-        tax_without_exercise = round(option_value * tax_rate)
-        tax_exercise_now = round(adjusted_options * (current_fmv - base_fmv) * tax_rate / 100000)
-        ltcg_tax = round(adjusted_options * max(fmv - current_fmv, 0) * ltcg_rate / 100000)
-        total_tax_with_exercise = round(tax_exercise_now + ltcg_tax)
+        ipo_fmv = current_fmv * (val / 3)
+
+        # Value of options at IPO FMV
+        option_value = round(adjusted_options * ipo_fmv / 100000)
+
+        # Tax if not exercised early (entire gain taxed as income)
+        tax_without_exercise = round(adjusted_options * (ipo_fmv - strike_price) * income_tax_rate / 100000)
+
+        # Tax if exercised now (split into perquisite + LTCG)
+        perquisite_tax = round(adjusted_options * (current_fmv - strike_price) * income_tax_rate / 100000)
+        ltcg_tax = round(adjusted_options * max(ipo_fmv - current_fmv, 0) * ltcg_rate / 100000)
+        total_tax_with_exercise = round(perquisite_tax + ltcg_tax)
+
         tax_savings = round(tax_without_exercise - total_tax_with_exercise)
 
         data.append({
             'IPO Valuation': val,
-            'FMV': round(fmv / 100000),
+            'FMV': round(ipo_fmv / 100000),
             'Value of Options': option_value,
             'Tax Without Exercise': tax_without_exercise,
-            'Tax Now with Exercise': tax_exercise_now,
+            'Perquisite Tax': perquisite_tax,
             'LTCG Tax': ltcg_tax,
             'Total Tax with Exercise': total_tax_with_exercise,
             'Potential Tax Savings': tax_savings
@@ -113,7 +120,7 @@ with col2:
     st.metric("Total Tax Liability", f"₹{current_row['Tax Without Exercise']} Lacs")
 
     st.markdown("### ✅ If You Exercise Now")
-    st.metric("Perquisite Tax", f"₹{current_row['Tax Now with Exercise']} Lacs")
+    st.metric("Perquisite Tax", f"₹{current_row['Perquisite Tax']} Lacs")
     st.metric("Capital Gains Tax", f"₹{current_row['LTCG Tax']} Lacs")
     st.metric("Total Tax Liability", f"₹{current_row['Total Tax with Exercise']} Lacs")
     st.metric("Tax Savings", f"₹{current_row['Potential Tax Savings']} Lacs")
@@ -124,7 +131,7 @@ st.dataframe(df.style.format({
     'FMV': '₹{:,.0f} Lacs',
     'Value of Options': '₹{:,.0f} Lacs',
     'Tax Without Exercise': '₹{:,.0f} Lacs',
-    'Tax Now with Exercise': '₹{:,.0f} Lacs',
+    'Perquisite Tax': '₹{:,.0f} Lacs',
     'LTCG Tax': '₹{:,.0f} Lacs',
     'Total Tax with Exercise': '₹{:,.0f} Lacs',
     'Potential Tax Savings': '₹{:,.0f} Lacs'
