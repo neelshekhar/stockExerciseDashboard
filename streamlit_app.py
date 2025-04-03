@@ -111,7 +111,7 @@ with st.expander("ℹ️ Explanation of Calculations", expanded=False):
 
     **✅ If You Exercise Now:**
     - **Two tax events occur:**
-      1. **Perquisite Tax**:
+      1. **Perquisite Tax applies at current FMV**:
          - Gain: ₹{current_fmv} − ₹{strike_price} = ₹{perquisite_gain}
          - Tax: {int(adjusted_options)} × ₹{perquisite_gain} × {income_tax_rate * 100}% = ₹{perquisite_tax:,}
       2. **LTCG (if IPO FMV > current FMV)**:
