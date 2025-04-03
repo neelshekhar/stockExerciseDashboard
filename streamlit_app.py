@@ -17,7 +17,7 @@ def calculate_data(adjusted_options):
     data = []
     for val in range(1, 11):
         fmv = current_fmv * (val / 3)
-        option_value = round(adjusted_options * (fmv - base_fmv) / 100000)
+        option_value = round(adjusted_options * fmv / 100)  # value in Lacs
         tax_without_exercise = round(option_value * tax_rate)
         tax_exercise_now = round(adjusted_options * (current_fmv - base_fmv) * tax_rate / 100000)
         ltcg_tax = round(adjusted_options * max(fmv - current_fmv, 0) * ltcg_rate / 100000)
@@ -58,7 +58,7 @@ st.title("💼 ESOP Tax Impact Simulator")
 # Toggle for adjustment type
 adjust_mode = st.radio("Adjust Options To Exercise By:", ["Percentage", "Absolute Number"], horizontal=True)
 if adjust_mode == "Percentage":
-    option_pct = st.slider("% of Options to Exercise", min_value=0, max_value=100, value=100, step=5)
+    option_pct = st.slider("% of Options to Exercise", min_value=50, max_value=100, value=100, step=5)
     adjusted_options = BASE_OPTIONS * (option_pct / 100)
 else:
     adjusted_options = st.number_input("Enter Number of Options to Exercise", min_value=0, value=BASE_OPTIONS, step=100)
@@ -96,7 +96,7 @@ with col1:
         x=filtered['IPO Valuation'], y=filtered['Total Tax with Exercise'],
         mode='lines+markers+text', name='With Early Exercise',
         text=filtered['Total Tax with Exercise'], textposition="bottom center",
-        line=dict(color='#FF0000')
+        line=dict(color='#3E6C99')
     ))
     fig.update_layout(
         xaxis_title="IPO Valuation (B)",
