@@ -79,37 +79,47 @@ current_row = df[df["IPO Valuation"] == valuation].iloc[0]
 
 # Explanation Panel
 with st.expander("ℹ️ Explanation of Calculations", expanded=False):
-    st.markdown("""
+    ipo_fmv = current_fmv * (valuation / 3)
+    gain_no_exercise = ipo_fmv - strike_price
+    tax_no_exercise = round(adjusted_options * gain_no_exercise * income_tax_rate)
+    perquisite_gain = current_fmv - strike_price
+    perquisite_tax = round(adjusted_options * perquisite_gain * income_tax_rate)
+    ltcg_gain = max(ipo_fmv - current_fmv, 0)
+    ltcg_tax = round(adjusted_options * ltcg_gain * ltcg_rate)
+    total_tax_exercise_now = perquisite_tax + ltcg_tax
+    tax_savings = tax_no_exercise - total_tax_exercise_now
+
+    st.markdown(f"""
     **🔧 Key Constants:**
-    - **Strike Price:** ₹12 (amount you pay per share)
-    - **Current FMV:** ₹4150 (value of share today, at exercise)
-    - **Income Tax Rate:** 36.67%
-    - **LTCG Tax Rate:** 12.5%
+    - **Strike Price:** ₹{strike_price} (amount you pay per share)
+    - **Current FMV:** ₹{current_fmv} (value of share today, at exercise)
+    - **Income Tax Rate:** {income_tax_rate * 100}%
+    - **LTCG Tax Rate:** {ltcg_rate * 100}%
 
     **📊 Based on Your Selection:**
     - **IPO Valuation:** ₹{valuation} Billion
     - **Number of Options Exercised:** {int(adjusted_options)}
-    - **IPO FMV:** ₹{current_fmv * (valuation / 3)}
+    - **IPO FMV:** ₹{int(ipo_fmv)}
 
     **💼 Option Value:**
-    - {int(adjusted_options)} × ₹{int(current_fmv * (valuation / 3))} = ₹{int(adjusted_options * current_fmv * (valuation / 3)):,}
+    - {int(adjusted_options)} × ₹{int(ipo_fmv)} = ₹{int(adjusted_options * ipo_fmv):,}
 
     **❌ If You Don't Exercise Now:**
     - Entire gain taxed as income:
-      - Gain: ₹{int(current_fmv * (valuation / 3))} − ₹12 = ₹{int(current_fmv * (valuation / 3) - 12)}
-      - Tax: {int(adjusted_options)} × ₹{int(current_fmv * (valuation / 3) - 12)} × 36.67% = ₹{round(adjusted_options * (current_fmv * (valuation / 3) - 12) * income_tax_rate):,}
+      - Gain: ₹{int(ipo_fmv)} − ₹{strike_price} = ₹{int(gain_no_exercise)}
+      - Tax: {int(adjusted_options)} × ₹{int(gain_no_exercise)} × {income_tax_rate * 100}% = ₹{tax_no_exercise:,}
 
     **✅ If You Exercise Now:**
     - **Two tax events occur:**
       1. **Perquisite Tax**:
-         - Gain: ₹4150 − ₹12 = ₹{4150 - 12}
-         - Tax: {int(adjusted_options)} × ₹{4150 - 12} × 36.67% = ₹{round(adjusted_options * (4150 - 12) * income_tax_rate):,}
+         - Gain: ₹{current_fmv} − ₹{strike_price} = ₹{perquisite_gain}
+         - Tax: {int(adjusted_options)} × ₹{perquisite_gain} × {income_tax_rate * 100}% = ₹{perquisite_tax:,}
       2. **LTCG (if IPO FMV > current FMV)**:
-         - Gain: ₹{int(current_fmv * (valuation / 3))} − ₹4150 = ₹{int(max(current_fmv * (valuation / 3) - 4150, 0))}
-         - Tax: {int(adjusted_options)} × ₹{int(max(current_fmv * (valuation / 3) - 4150, 0))} × 12.5% = ₹{round(adjusted_options * max(current_fmv * (valuation / 3) - 4150, 0) * ltcg_rate):,}
-      - **Total Tax if Exercised Now** = Perquisite + LTCG = ₹{round(adjusted_options * (4150 - 12) * income_tax_rate + adjusted_options * max(current_fmv * (valuation / 3) - 4150, 0) * ltcg_rate):,}
+         - Gain: ₹{int(ipo_fmv)} − ₹{current_fmv} = ₹{int(ltcg_gain)}
+         - Tax: {int(adjusted_options)} × ₹{int(ltcg_gain)} × {ltcg_rate * 100}% = ₹{ltcg_tax:,}
+      - **Total Tax if Exercised Now** = ₹{total_tax_exercise_now:,}
 
-    **💰 Potential Tax Savings:** ₹{round(adjusted_options * (current_fmv * (valuation / 3) - 12) * income_tax_rate - (adjusted_options * (4150 - 12) * income_tax_rate + adjusted_options * max(current_fmv * (valuation / 3) - 4150, 0) * ltcg_rate)):,}
+    **💰 Potential Tax Savings:** ₹{tax_savings:,}
     """)
 
 # Summary
