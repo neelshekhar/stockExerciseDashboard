@@ -106,8 +106,8 @@ with st.expander("ℹ️ Explanation of Calculations", expanded=False):
 
     **❌ If You Don't Exercise Now:**
     - Entire gain taxed as income at IPO:
-      - Gain: ₹{int(ipo_fmv)} − ₹{strike_price} = ₹{int(gain_no_exercise)}
-      - Tax: {int(adjusted_options)} × ₹{int(gain_no_exercise)} × {income_tax_rate * 100}% = ₹{tax_no_exercise:,}
+      - Gain per share: ₹{int(ipo_fmv)} − ₹{strike_price} = ₹{int(gain_no_exercise)}
+      - Total Tax Liability : {int(adjusted_options)} × ₹{int(gain_no_exercise)} × {income_tax_rate * 100}% = ₹{tax_no_exercise:,}
 
     **✅ If You Exercise Now:**
     - **Two tax events occur:**
