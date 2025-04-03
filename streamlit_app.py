@@ -119,7 +119,7 @@ with st.expander("ℹ️ Explanation of Calculations", expanded=False):
          - Tax: {int(adjusted_options)} × ₹{int(ltcg_gain)} × {ltcg_rate * 100}% = ₹{ltcg_tax:,}
       - **Total Tax if Exercised Now** = ₹{total_tax_exercise_now:,}
 
-    **💰 Potential Tax Savings:** ₹{tax_savings:,}
+    **💰 Potential Tax Savings by exercising now:** ₹{tax_savings:,}
     """)
 
 # Summary
