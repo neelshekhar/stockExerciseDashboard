@@ -99,7 +99,7 @@ with st.expander("ℹ️ Explanation of Calculations", expanded=False):
     **📊 Based on Your Selection:**
     - **IPO Valuation:** ₹{valuation} Billion
     - **Number of Options Exercised:** {int(adjusted_options)}
-    - **IPO FMV:** ₹{int(ipo_fmv)}
+    - **IPO FMV per share:** ₹{int(ipo_fmv)}
 
     **💼 Option Value:**
     - {int(adjusted_options)} × ₹{int(ipo_fmv)} = ₹{int(adjusted_options * ipo_fmv):,}
