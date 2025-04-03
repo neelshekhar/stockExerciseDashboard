@@ -61,27 +61,6 @@ st.markdown("""
 
 st.title("💼 ESOP Tax Impact Simulator")
 
-# Explanation Panel
-with st.expander("ℹ️ Explanation of Calculations", expanded=False):
-    st.markdown("""
-    **🔧 Key Constants:**
-    - **Strike Price:** ₹12 (amount you pay per share)
-    - **Current FMV:** ₹4150 (value of share today, at exercise)
-    - **Income Tax Rate:** 36.67%
-    - **LTCG Tax Rate:** 12.5%
-
-    **📊 Key Calculations:**
-    - **IPO FMV:** Scales from ₹1B to ₹10B
-    - **Option Value:** `Options × IPO FMV`
-    - **Tax Without Early Exercise:** `Options × (IPO FMV − Strike) × Income Tax %`
-    - **Perquisite Tax (if exercised now):** `Options × (Current FMV − Strike) × Income Tax %`
-    - **LTCG:** `Options × (IPO FMV − Current FMV) × LTCG %`
-    - **Total Tax if Exercised Now:** `Perquisite Tax + LTCG`
-    - **Tax Savings:** Difference between the two
-
-    💡 All values are rounded to ₹ Lacs.
-    """)
-
 # Toggle for adjustment type
 adjust_mode = st.radio("Adjust Options To Exercise By:", ["Percentage", "Absolute Number"], horizontal=True)
 if adjust_mode == "Percentage":
@@ -97,6 +76,41 @@ valuation = st.slider("Select IPO Valuation (in ₹ Billion)", min_value=1, max_
 df = calculate_data(adjusted_options)
 filtered = df[df["IPO Valuation"] <= valuation]
 current_row = df[df["IPO Valuation"] == valuation].iloc[0]
+
+# Explanation Panel
+with st.expander("ℹ️ Explanation of Calculations", expanded=False):
+    st.markdown("""
+    **🔧 Key Constants:**
+    - **Strike Price:** ₹12 (amount you pay per share)
+    - **Current FMV:** ₹4150 (value of share today, at exercise)
+    - **Income Tax Rate:** 36.67%
+    - **LTCG Tax Rate:** 12.5%
+
+    **📊 Based on Your Selection:**
+    - **IPO Valuation:** ₹{valuation} Billion
+    - **Number of Options Exercised:** {int(adjusted_options)}
+    - **IPO FMV:** ₹{current_fmv * (valuation / 3)}
+
+    **💼 Option Value:**
+    - {int(adjusted_options)} × ₹{int(current_fmv * (valuation / 3))} = ₹{int(adjusted_options * current_fmv * (valuation / 3)):,}
+
+    **❌ If You Don't Exercise Now:**
+    - Entire gain taxed as income:
+      - Gain: ₹{int(current_fmv * (valuation / 3))} − ₹12 = ₹{int(current_fmv * (valuation / 3) - 12)}
+      - Tax: {int(adjusted_options)} × ₹{int(current_fmv * (valuation / 3) - 12)} × 36.67% = ₹{round(adjusted_options * (current_fmv * (valuation / 3) - 12) * income_tax_rate):,}
+
+    **✅ If You Exercise Now:**
+    - **Two tax events occur:**
+      1. **Perquisite Tax**:
+         - Gain: ₹4150 − ₹12 = ₹{4150 - 12}
+         - Tax: {int(adjusted_options)} × ₹{4150 - 12} × 36.67% = ₹{round(adjusted_options * (4150 - 12) * income_tax_rate):,}
+      2. **LTCG (if IPO FMV > current FMV)**:
+         - Gain: ₹{int(current_fmv * (valuation / 3))} − ₹4150 = ₹{int(max(current_fmv * (valuation / 3) - 4150, 0))}
+         - Tax: {int(adjusted_options)} × ₹{int(max(current_fmv * (valuation / 3) - 4150, 0))} × 12.5% = ₹{round(adjusted_options * max(current_fmv * (valuation / 3) - 4150, 0) * ltcg_rate):,}
+      - **Total Tax if Exercised Now** = Perquisite + LTCG = ₹{round(adjusted_options * (4150 - 12) * income_tax_rate + adjusted_options * max(current_fmv * (valuation / 3) - 4150, 0) * ltcg_rate):,}
+
+    **💰 Potential Tax Savings:** ₹{round(adjusted_options * (current_fmv * (valuation / 3) - 12) * income_tax_rate - (adjusted_options * (4150 - 12) * income_tax_rate + adjusted_options * max(current_fmv * (valuation / 3) - 4150, 0) * ltcg_rate)):,}
+    """)
 
 # Summary
 st.markdown(f"""
