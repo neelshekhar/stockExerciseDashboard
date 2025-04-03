@@ -17,7 +17,7 @@ def calculate_data(adjusted_options):
     data = []
     for val in range(1, 11):
         fmv = current_fmv * (val / 3)
-        option_value = round(adjusted_options * fmv / 100000)  # value in Lacs
+        option_value = round(adjusted_options * fmv / 100000)
         tax_without_exercise = round(option_value * tax_rate)
         tax_exercise_now = round(adjusted_options * (current_fmv - base_fmv) * tax_rate / 100000)
         ltcg_tax = round(adjusted_options * max(fmv - current_fmv, 0) * ltcg_rate / 100000)
@@ -26,7 +26,7 @@ def calculate_data(adjusted_options):
 
         data.append({
             'IPO Valuation': val,
-            'FMV': round(fmv),
+            'FMV': round(fmv / 100000),
             'Value of Options': option_value,
             'Tax Without Exercise': tax_without_exercise,
             'Tax Now with Exercise': tax_exercise_now,
@@ -75,7 +75,7 @@ current_row = df[df["IPO Valuation"] == valuation].iloc[0]
 st.markdown(f"""
 ### 📊 Valuation: ₹{valuation}B  
 - Options to Exercise: {int(adjusted_options)}  
-- FMV: ₹{current_row['FMV']}  
+- FMV: ₹{current_row['FMV']} Lacs  
 - 💼 Option Value: ₹{current_row['Value of Options']} Lacs  
 - 💸 Potential Tax Savings: ₹{current_row['Potential Tax Savings']} Lacs
 """)
@@ -105,27 +105,3 @@ with col1:
         font=dict(family='Segoe UI', color='#2E3B4E', size=16),
         legend=dict(orientation="h", yanchor="bottom", y=1.02, xanchor="center", x=0.5)
     )
-    st.plotly_chart(fig, use_container_width=True)
-
-with col2:
-    st.subheader("📌 Detailed Metrics at Selected Valuation")
-    st.markdown("### ❌ If You Don't Exercise Now")
-    st.metric("Total Tax Liability", f"₹{current_row['Tax Without Exercise']} Lacs")
-
-    st.markdown("### ✅ If You Exercise Now")
-    st.metric("Perquisite Tax", f"₹{current_row['Tax Now with Exercise']} Lacs")
-    st.metric("Capital Gains Tax", f"₹{current_row['LTCG Tax']} Lacs")
-    st.metric("Total Tax Liability", f"₹{current_row['Total Tax with Exercise']} Lacs")
-    st.metric("Tax Savings", f"₹{current_row['Potential Tax Savings']} Lacs")
-
-# Breakdown Table
-st.subheader("📄 Tax Scenario Breakdown Across All Valuations")
-st.dataframe(df.style.format({
-    'FMV': '₹{:,.0f}',
-    'Value of Options': '₹{:,.0f} Lacs',
-    'Tax Without Exercise': '₹{:,.0f} Lacs',
-    'Tax Now with Exercise': '₹{:,.0f} Lacs',
-    'LTCG Tax': '₹{:,.0f} Lacs',
-    'Total Tax with Exercise': '₹{:,.0f} Lacs',
-    'Potential Tax Savings': '₹{:,.0f} Lacs'
-}))
