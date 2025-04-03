@@ -7,7 +7,7 @@ import plotly.graph_objects as go
 
 # Constants
 BASE_OPTIONS = 2131
-current_fmv = 4150  # Market Value at time of early exercise
+current_fmv = 4150  #  at time of early exercise
 strike_price = 12   # Strike price of the options
 income_tax_rate = 36.67 / 100
 ltcg_rate = 12.5 / 100
@@ -18,7 +18,7 @@ def calculate_data(adjusted_options):
     for val in range(1, 11):
         ipo_fmv = current_fmv * (val / 3)
 
-        # Value of options at IPO Market Value
+        # Value of options at IPO 
         option_value = round(adjusted_options * ipo_fmv / 100000)
 
         # Tax if not exercised early (entire gain taxed as income)
@@ -32,9 +32,7 @@ def calculate_data(adjusted_options):
         tax_savings = round(tax_without_exercise - total_tax_with_exercise)
 
         data.append({
-            'IPO Valuation': val,
-            'Market Value': round(ipo_fmv / 100000),
-            'Value of Options': option_value,
+            'IPO Valuation': val,            'Value of Options': option_value,
             'Tax Without Exercise': tax_without_exercise,
             'Perquisite Tax': perquisite_tax,
             'LTCG Tax': ltcg_tax,
@@ -82,7 +80,7 @@ current_row = df[df["IPO Valuation"] == valuation].iloc[0]
 st.markdown(f"""
 ### 📊 Valuation: ₹{valuation}B  
 - Options to Exercise: {int(adjusted_options)}  
-- Market Value: ₹{current_row['Market Value']} Lacs  
+- : ₹{current_row['']} Lacs  
 - 💼 Option Value: ₹{current_row['Value of Options']} Lacs  
 - 💸 Potential Tax Savings: ₹{current_row['Potential Tax Savings']} Lacs
 """)
@@ -127,9 +125,7 @@ with col2:
 
 # Breakdown Table
 st.subheader("📄 Tax Scenario Breakdown Across All Valuations")
-st.dataframe(df.style.format({
-    'Market Value': '₹{:,.0f} Lacs',
-    'Value of Options': '₹{:,.0f} Lacs',
+st.dataframe(df.style.format({    'Value of Options': '₹{:,.0f} Lacs',
     'Tax Without Exercise': '₹{:,.0f} Lacs',
     'Perquisite Tax': '₹{:,.0f} Lacs',
     'LTCG Tax': '₹{:,.0f} Lacs',
