@@ -7,7 +7,7 @@ import plotly.graph_objects as go
 
 # Constants
 BASE_OPTIONS = 2131
-current_fmv = 4150  #  at time of early exercise
+current_fmv = 4150  # FMV at time of early exercise
 strike_price = 12   # Strike price of the options
 income_tax_rate = 36.67 / 100
 ltcg_rate = 12.5 / 100
@@ -18,7 +18,7 @@ def calculate_data(adjusted_options):
     for val in range(1, 11):
         ipo_fmv = current_fmv * (val / 3)
 
-        # Value of options at IPO 
+        # Value of options at IPO FMV
         option_value = round(adjusted_options * ipo_fmv / 100000)
 
         # Tax if not exercised early (entire gain taxed as income)
@@ -32,7 +32,8 @@ def calculate_data(adjusted_options):
         tax_savings = round(tax_without_exercise - total_tax_with_exercise)
 
         data.append({
-            'IPO Valuation': val,            'Value of Options': option_value,
+            'IPO Valuation': val,
+            'Value of Options': option_value,
             'Tax Without Exercise': tax_without_exercise,
             'Perquisite Tax': perquisite_tax,
             'LTCG Tax': ltcg_tax,
@@ -60,6 +61,27 @@ st.markdown("""
 
 st.title("💼 ESOP Tax Impact Simulator")
 
+# Explanation Panel
+with st.expander("ℹ️ Explanation of Calculations", expanded=False):
+    st.markdown("""
+    **🔧 Key Constants:**
+    - **Strike Price:** ₹12 (amount you pay per share)
+    - **Current FMV:** ₹4150 (value of share today, at exercise)
+    - **Income Tax Rate:** 36.67%
+    - **LTCG Tax Rate:** 12.5%
+
+    **📊 Key Calculations:**
+    - **IPO FMV:** Scales from ₹1B to ₹10B
+    - **Option Value:** `Options × IPO FMV`
+    - **Tax Without Early Exercise:** `Options × (IPO FMV − Strike) × Income Tax %`
+    - **Perquisite Tax (if exercised now):** `Options × (Current FMV − Strike) × Income Tax %`
+    - **LTCG:** `Options × (IPO FMV − Current FMV) × LTCG %`
+    - **Total Tax if Exercised Now:** `Perquisite Tax + LTCG`
+    - **Tax Savings:** Difference between the two
+
+    💡 All values are rounded to ₹ Lacs.
+    """)
+
 # Toggle for adjustment type
 adjust_mode = st.radio("Adjust Options To Exercise By:", ["Percentage", "Absolute Number"], horizontal=True)
 if adjust_mode == "Percentage":
@@ -80,7 +102,6 @@ current_row = df[df["IPO Valuation"] == valuation].iloc[0]
 st.markdown(f"""
 ### 📊 Valuation: ₹{valuation}B  
 - Options to Exercise: {int(adjusted_options)}  
-- : ₹{current_row['']} Lacs  
 - 💼 Option Value: ₹{current_row['Value of Options']} Lacs  
 - 💸 Potential Tax Savings: ₹{current_row['Potential Tax Savings']} Lacs
 """)
@@ -125,7 +146,8 @@ with col2:
 
 # Breakdown Table
 st.subheader("📄 Tax Scenario Breakdown Across All Valuations")
-st.dataframe(df.style.format({    'Value of Options': '₹{:,.0f} Lacs',
+st.dataframe(df.style.format({
+    'Value of Options': '₹{:,.0f} Lacs',
     'Tax Without Exercise': '₹{:,.0f} Lacs',
     'Perquisite Tax': '₹{:,.0f} Lacs',
     'LTCG Tax': '₹{:,.0f} Lacs',
