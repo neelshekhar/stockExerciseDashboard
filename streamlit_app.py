@@ -59,7 +59,7 @@ st.markdown("""
     </style>
 """, unsafe_allow_html=True)
 
-st.title("💼 ESOP Tax Impact Simulator")
+st.title("💼 ESOP Exercise Tax Impact Calculator")
 
 # Toggle for adjustment type
 adjust_mode = st.radio("Adjust Options To Exercise By:", ["Percentage", "Absolute Number"], horizontal=True)
@@ -70,7 +70,7 @@ else:
     adjusted_options = st.number_input("Enter Number of Options to Exercise", min_value=0, value=BASE_OPTIONS, step=100)
 
 # Valuation input
-valuation = st.slider("Select IPO Valuation (in ₹ Billion)", min_value=1, max_value=10, value=3)
+valuation = st.slider("Select expected valuation at IPO (in $ Billion)", min_value=1, max_value=10, value=3)
 
 # Data Calculation
 df = calculate_data(adjusted_options)
@@ -91,17 +91,17 @@ with st.expander("ℹ️ Explanation of Calculations", expanded=False):
 
     st.markdown(f"""
     **🔧 Key Constants:**
-    - **Strike Price:** ₹{strike_price} (amount you pay per share)
-    - **Current FMV:** ₹{current_fmv} (value of share today, at exercise)
+    - **Strike Price:** ₹{strike_price} (cost to exercise a share)
+    - **Current FMV:** ₹{current_fmv} (Stock being exercised at this price)
     - **Income Tax Rate:** {income_tax_rate * 100}%
     - **LTCG Tax Rate:** {ltcg_rate * 100}%
 
     **📊 Based on Your Selection:**
-    - **IPO Valuation:** ₹{valuation} Billion
+    - **Expected Valuation at IPO:** ₹{valuation} Billion
     - **Number of Options Exercised:** {int(adjusted_options)}
-    - **IPO FMV per share:** ₹{int(ipo_fmv)}
+    - **FMV per share at IPO:** ₹{int(ipo_fmv)}
 
-    **💼 Option Value:**
+    **💼 Total Value of the options exercised:**
     - {int(adjusted_options)} × ₹{int(ipo_fmv)} = ₹{int(adjusted_options * ipo_fmv):,}
 
     **❌ If You Don't Exercise Now:**
